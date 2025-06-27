@@ -1,0 +1,97 @@
+openapi: 3.0.0
+info:
+  title: Intern/Job Tracker API
+  version: 1.0.0
+  description: API to manage internship and job applications
+
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+
+paths:
+  /applications:
+    get:
+      summary: Get all applications
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Application'
+    post:
+      summary: Add a new application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationInput'
+      responses:
+        '201':
+          description: Application added
+
+  /applications/{id}:
+    put:
+      summary: Update application by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationInput'
+      responses:
+        '200':
+          description: Application updated
+
+    delete:
+      summary: Delete application by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Application deleted
+
+components:
+  schemas:
+    Application:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        company:
+          type: string
+        role:
+          type: string
+        status:
+          type: string
+    ApplicationInput:
+      type: object
+      required:
+        - name
+        - company
+        - role
+        - status
+      properties:
+        name:
+          type: string
+        company:
+          type: string
+        role:
+          type: string
+        status:
+          type: string
