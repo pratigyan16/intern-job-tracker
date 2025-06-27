@@ -1,0 +1,41 @@
+name: Keploy API Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        run: |
+          cd backend
+          npm install
+
+      - name: Install Keploy
+        run: |
+          curl -sL https://github.com/keploy/keploy/releases/latest/download/keploy_linux_amd64.tar.gz | tar xz -C /tmp
+          sudo mv /tmp/keploy /usr/local/bin/keploy
+          keploy version
+
+      - name: Run Keploy Record
+        run: |
+          cd backend
+          keploy record -c "node app.js" --record-timer 30s --cmd-type native --pass-through-ports 5000 || true
+
+      - name: Run Keploy Test
+        run: |
+          cd backend
+          keploy test --cmd-type native -c "node app.js" --pass-through-ports 5000 || true
